@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"ezqueue/app"
 	"ezqueue/auth"
 	"ezqueue/auth/providers"
+	"ezqueue/common"
 	"ezqueue/routes"
 	"log"
 	"os"

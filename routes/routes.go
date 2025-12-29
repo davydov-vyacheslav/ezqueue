@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"ezqueue/app"
 	"ezqueue/auth"
+	"ezqueue/common"
 	"ezqueue/handlers"
 )
 

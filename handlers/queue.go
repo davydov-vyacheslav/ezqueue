@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"ezqueue/app"
+	"ezqueue/common"
 	"ezqueue/models"
 	"fmt"
 	"math/rand"
