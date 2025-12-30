@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Queue struct {
-	ID            string    `firestore:"id" json:"id"`
+	ID            string    `firestore:"-" json:"id"`
 	Name          string    `firestore:"name" json:"name"`
 	Description   string    `firestore:"description" json:"description"`
 	EventTime     time.Time `firestore:"eventTime" json:"eventTime"`

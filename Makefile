@@ -4,12 +4,13 @@ run:
 	go run .
 
 clean:
-	rm -f output
+	rm -rf ./output
 
 prepare:
 	mkdir output
 
 build: clean prepare
+	swag init
 	go build -o output/server .
 
 test:

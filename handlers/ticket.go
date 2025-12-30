@@ -12,10 +12,10 @@ import (
 )
 
 type TicketHandler struct {
-	App *app.App
+	App *common.App
 }
 
-func NewTicketHandler(application *app.App) *TicketHandler {
+func NewTicketHandler(application *common.App) *TicketHandler {
 	return &TicketHandler{App: application}
 }
 
@@ -35,7 +35,7 @@ func (h *TicketHandler) GetMyTickets(c *gin.Context) {
 			break
 		}
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch tickets"})
+			c.JSON(http.StatusInternalServerError, common.GetErrorResponse("Failed to fetch tickets"))
 			return
 		}
 
@@ -49,6 +49,7 @@ func (h *TicketHandler) GetMyTickets(c *gin.Context) {
 	c.JSON(http.StatusOK, tickets)
 }
 
+// TODO: to be removed as part of /queues/:id endpoint
 func (h *TicketHandler) GetQueueTickets(c *gin.Context) {
 	queueID := c.Param("id")
 
@@ -64,7 +65,7 @@ func (h *TicketHandler) GetQueueTickets(c *gin.Context) {
 			break
 		}
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch tickets"})
+			c.JSON(http.StatusInternalServerError, common.GetErrorResponse("Failed to fetch tickets"))
 			return
 		}
 
@@ -78,6 +79,9 @@ func (h *TicketHandler) GetQueueTickets(c *gin.Context) {
 	c.JSON(http.StatusOK, tickets)
 }
 
+// TODO: to be remastered: owner, mentor can close user ticket;
+//
+//	user can close its ticket
 func (h *TicketHandler) DeleteTicket(c *gin.Context) {
 	ticketID := c.Param("id")
 
@@ -89,7 +93,7 @@ func (h *TicketHandler) DeleteTicket(c *gin.Context) {
 		},
 	)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete ticket"})
+		c.JSON(http.StatusInternalServerError, common.GetErrorResponse("Failed to delete ticket"))
 		return
 	}
 

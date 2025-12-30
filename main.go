@@ -15,6 +15,11 @@ import (
 	"google.golang.org/api/option"
 )
 
+// @title           Easy Queue API
+// @version         1.0
+// @description     Queue service API
+// @host            https://ezq.onrender.com
+// @BasePath        /api/v1
 func main() {
 	godotenv.Load()
 
@@ -43,7 +48,7 @@ func main() {
 	}
 }
 
-func initializeApp() (*app.App, error) {
+func initializeApp() (*common.App, error) {
 	ctx := context.Background()
 
 	opt := option.WithAuthCredentialsFile(option.ServiceAccount, os.Getenv("FIREBASE_CREDENTIALS"))
@@ -65,7 +70,7 @@ func initializeApp() (*app.App, error) {
 	router := gin.Default()
 	router.Use(corsMiddleware())
 
-	return &app.App{
+	return &common.App{
 		FirebaseApp: firebaseApp,
 		AuthClient:  authClient,
 		FSClient:    fsClient,

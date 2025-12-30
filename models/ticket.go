@@ -2,9 +2,8 @@ package models
 
 import "time"
 
-// FIXME: subclass of user?
 type Ticket struct {
-	ID              string    `firestore:"id" json:"id"`
+	ID              string    `firestore:"-" json:"id"`
 	QueueID         string    `firestore:"queueId" json:"queueId"`
 	UserID          string    `firestore:"userId" json:"userId"`
 	TicketNumber    int       `firestore:"ticketNumber" json:"ticketNumber"`

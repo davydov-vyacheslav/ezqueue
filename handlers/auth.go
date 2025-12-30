@@ -11,13 +11,13 @@ import (
 )
 
 type AuthHandler struct {
-	App         *app.App
+	App         *common.App
 	Providers   map[string]auth.Provider
 	RefreshRepo *auth.RefreshTokenRepo
 	UserRepo    *auth.UserRepo
 }
 
-func NewAuthHandler(application *app.App, providers map[string]auth.Provider) *AuthHandler {
+func NewAuthHandler(application *common.App, providers map[string]auth.Provider) *AuthHandler {
 	return &AuthHandler{
 		App:         application,
 		Providers:   providers,
@@ -76,19 +76,19 @@ type LoginRequest struct {
 func (a *AuthHandler) Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": "bad request"})
+		c.JSON(400, common.GetErrorResponse("Bad Request"))
 		return
 	}
 
 	provider, ok := a.Providers[req.Provider]
 	if !ok {
-		c.JSON(400, gin.H{"error": "unknown provider"})
+		c.JSON(400, common.GetErrorResponse("Unknown provider"))
 		return
 	}
 
 	userInfo, err := provider.Verify(context.Background(), req.Token)
 	if err != nil {
-		c.JSON(401, gin.H{"error": "invalid token"})
+		c.JSON(401, common.GetErrorResponse("Invalid token"))
 		return
 	}
 
@@ -97,7 +97,7 @@ func (a *AuthHandler) Login(c *gin.Context) {
 		*userInfo,
 	)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "failed to find or create user"})
+		c.JSON(500, common.GetErrorResponse("Failed to find or create user"))
 		return
 	}
 
@@ -122,7 +122,7 @@ type RefreshRequest struct {
 func (a *AuthHandler) Refresh(c *gin.Context) {
 	var req RefreshRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": "bad request"})
+		c.JSON(400, common.GetErrorResponse("Bad request"))
 		return
 	}
 
@@ -131,7 +131,7 @@ func (a *AuthHandler) Refresh(c *gin.Context) {
 	rt, err := a.RefreshRepo.Get(context.Background(), tokenHash)
 	if err != nil {
 		// ❗ token не найден → возможно reuse → можно инвалидировать все refresh пользователя
-		c.JSON(401, gin.H{"error": "invalid refresh token"})
+		c.JSON(401, common.GetErrorResponse("Invalid Refresh token"))
 		return
 	}
 
@@ -139,7 +139,7 @@ func (a *AuthHandler) Refresh(c *gin.Context) {
 
 	if time.Now().After(rt.ExpiresAt) {
 		a.RefreshRepo.Delete(context.Background(), tokenHash)
-		c.JSON(401, gin.H{"error": "refresh token expired"})
+		c.JSON(401, common.GetErrorResponse("Refresh token expired"))
 		return
 	}
 

@@ -3,10 +3,16 @@ package routes
 import (
 	"ezqueue/auth"
 	"ezqueue/common"
+	_ "ezqueue/docs"
 	"ezqueue/handlers"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func SetupRoutes(app *app.App, providers map[string]auth.Provider) {
+// TODO: oas spec generator
+
+func SetupRoutes(app *common.App, providers map[string]auth.Provider) {
 
 	authHandler := handlers.NewAuthHandler(app, providers)
 	queueHandler := handlers.NewQueueHandler(app)
@@ -15,6 +21,7 @@ func SetupRoutes(app *app.App, providers map[string]auth.Provider) {
 	// public routes
 	app.Router.POST("/auth/login", authHandler.Login)
 	app.Router.POST("/auth/refresh", authHandler.Refresh)
+	app.Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := app.Router.Group("/api/v1")
 
@@ -31,11 +38,10 @@ func SetupRoutes(app *app.App, providers map[string]auth.Provider) {
 		protected.GET("/queues/:id", queueHandler.GetQueue)
 		protected.POST("/queues/join", queueHandler.JoinQueue)
 		protected.POST("/queues/:id/close", queueHandler.CloseQueue)
-		protected.POST("/queues/:id/mentors", queueHandler.AssignMentors)
 
 		// Tickets routes
-		protected.DELETE("/tickets/:id", ticketHandler.DeleteTicket)
-		protected.GET("/queues/:id/tickets", ticketHandler.GetQueueTickets)
+		//protected.DELETE("/tickets/:id", ticketHandler.DeleteTicket)
+		//protected.GET("/queues/:id/tickets", ticketHandler.GetQueueTickets)
 		protected.GET("/tickets/my", ticketHandler.GetMyTickets)
 
 		// Cashier routes
