@@ -5,6 +5,13 @@ definitions:
       error:
         type: string
     type: object
+  common.EzqTokenResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
   handlers.CreateQueueRequest:
     properties:
       description:
@@ -17,6 +24,25 @@ definitions:
         type: string
     required:
     - name
+    type: object
+  handlers.LoginRequest:
+    properties:
+      provider:
+        description: |-
+          Auth provider
+          example: google
+          enums: google
+        type: string
+      token:
+        description: |-
+          Provider's access / ID token
+          example: eyJhbGciOiJSUzI1NiIsImtpZCI6...
+        type: string
+    type: object
+  handlers.RefreshRequest:
+    properties:
+      refresh_token:
+        type: string
     type: object
   models.Queue:
     properties:
@@ -55,6 +81,36 @@ info:
   title: Easy Queue API
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Refresh expired application's auth token
+      parameters:
+      - description: Refresh token value
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.RefreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.EzqTokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/common.ErrorResponse'
+      summary: Refresh auth token
+      tags:
+      - auth
   /queues:
     post:
       consumes:
@@ -78,7 +134,14 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/common.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: Create queue
       tags:
       - queues
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

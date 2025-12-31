@@ -20,6 +20,10 @@ import (
 // @description     Queue service API
 // @host            https://ezq.onrender.com
 // @BasePath        /api/v1
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 	godotenv.Load()
 

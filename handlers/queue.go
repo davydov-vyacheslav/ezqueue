@@ -42,6 +42,7 @@ type JoinQueueRequest struct {
 // @Success      201 {object} models.Queue
 // @Failure      400 {object} common.ErrorResponse
 // @Router       /queues [post]
+// @Security     BearerAuth
 func (h *QueueHandler) CreateQueue(c *gin.Context) {
 	var req CreateQueueRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -53,7 +54,6 @@ func (h *QueueHandler) CreateQueue(c *gin.Context) {
 	queueID := uuid.NewString()
 
 	queue := models.Queue{
-		//ID:          queueID,
 		Name:        req.Name,
 		Description: req.Description,
 		Location:    req.Location,

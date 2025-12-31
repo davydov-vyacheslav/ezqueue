@@ -69,10 +69,28 @@ func (h *AuthHandler) GetCurrentUser(c *gin.Context) {
 }
 
 type LoginRequest struct {
+	// Auth provider
+	// example: google
+	// enums: google
 	Provider string `json:"provider"`
-	Token    string `json:"token"`
+
+	// Provider's access / ID token
+	// example: eyJhbGciOiJSUzI1NiIsImtpZCI6...
+	Token string `json:"token"`
 }
 
+// Login godoc
+// @Summary Authenticate via Identity provider
+// @Description Exchange IdP ID token for application JWT
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param request body LoginRequest true "Login request"
+// @Success 200 {object} common.EzqTokenResponse
+// @Failure 400 {object} common.ErrorResponse
+// @Failure 401 {object} common.ErrorResponse
+// @Failure 500 {object} common.ErrorResponse
+// @Router /auth/login [post]
 func (a *AuthHandler) Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -109,9 +127,9 @@ func (a *AuthHandler) Login(c *gin.Context) {
 
 	_ = a.RefreshRepo.Save(c, hash, userID, expires)
 
-	c.JSON(200, gin.H{
-		"access_token":  access,
-		"refresh_token": refreshToken,
+	c.JSON(200, common.EzqTokenResponse{
+		AccessToken:  access,
+		RefreshToken: refreshToken,
 	})
 }
 
@@ -119,6 +137,17 @@ type RefreshRequest struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
+// Refresh godoc
+// @Summary Refresh auth token
+// @Description Refresh expired application's auth token
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param request body RefreshRequest true "Refresh token value"
+// @Success 200 {object} common.EzqTokenResponse
+// @Failure 400 {object} common.ErrorResponse
+// @Failure 401 {object} common.ErrorResponse
+// @Router /auth/login [post]
 func (a *AuthHandler) Refresh(c *gin.Context) {
 	var req RefreshRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -158,8 +187,8 @@ func (a *AuthHandler) Refresh(c *gin.Context) {
 		expires,
 	)
 
-	c.JSON(200, gin.H{
-		"access_token":  access,
-		"refresh_token": newRefresh,
+	c.JSON(200, common.EzqTokenResponse{
+		AccessToken:  access,
+		RefreshToken: newRefresh,
 	})
 }
